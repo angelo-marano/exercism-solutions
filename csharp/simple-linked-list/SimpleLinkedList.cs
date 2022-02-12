@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Policy;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Sources;
+
 
 public class SimpleLinkedList<T> : IEnumerable<T>
 {
@@ -32,28 +25,51 @@ public class SimpleLinkedList<T> : IEnumerable<T>
     public SimpleLinkedList<T> Add(T value)
     {
         var current = this;
-        while (current.Next == null)
+        while (current.Next != null)
         {
             current = current.Next;
         }
 
-        current.Next = new SimpleLinkedList(value);
+        current.Next = new SimpleLinkedList<T>(value);
+        return current;
     }
 
-    public IEnumerator<T> GetEnumerator()
-    {
-        return new SimpleLinkedListEnumerator<T>(this);
-    }
+    public IEnumerator<T> GetEnumerator() => new SimpleLinkedListEnumerator(this);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 
-    public class SimpleLinkedListEnumerator<T> : IEnumerator<T>
+    private class SimpleLinkedListEnumerator : IEnumerator<T>
     {
         private SimpleLinkedList<T> _current;
+        private readonly SimpleLinkedList<T> _start;
         public SimpleLinkedListEnumerator(SimpleLinkedList<T> list)
         {
+            _start = list;
             _current = list;
+        }
+
+        public bool MoveNext()
+        {
+            if (_current.Next == null)
+            {
+                return false;
+            }
+
+            _current = _current.Next;
+            return true;
+
+        }
+
+        public void Reset() => _current = _start;
+
+        public T Current => _current.Value;
+
+        object IEnumerator.Current => Current;
+
+        public void Dispose()
+        {
+            
         }
     }
 
