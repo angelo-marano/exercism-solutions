@@ -1,14 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
+using System.Threading.Tasks;
 
+using Xunit;
 
 public class SimpleLinkedList<T> : IEnumerable<T>
 {
-    public SimpleLinkedList(T value)
-    {
-        Value = value;
-    }
+    public SimpleLinkedList(T value) => Value = value;
 
     public SimpleLinkedList(IEnumerable<T> values) : this(values.First())
     {
@@ -38,6 +39,20 @@ public class SimpleLinkedList<T> : IEnumerable<T>
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+    public IEnumerable<T> Reverse()
+    {
+        SimpleLinkedList<T> previous = null;
+        SimpleLinkedList<T> current = this;
+        while (current != null)
+        {
+            var next = current.Next;
+            next.Next = previous;
+            previous = current;
+            current = next;
+        }
+
+        return current;
+    }
 
     private class SimpleLinkedListEnumerator : IEnumerator<T>
     {
@@ -69,7 +84,7 @@ public class SimpleLinkedList<T> : IEnumerable<T>
 
         public void Dispose()
         {
-            
+
         }
     }
 
